@@ -6,8 +6,7 @@ from branch_analysis_w_chain import *
 import os
 import pickle
 
-
-os.makedirs(save_folder, exist_ok=True)  # create folder if it doesn't exist
+save_folder = r"/home/babyrd/branches/Personal/results/test/v1/"  # or "./results" for relative paths
 print("Python argv:", sys.argv)
 print("Current dir:", os.getcwd())
 print("Save folder:", save_folder)
