@@ -6,6 +6,10 @@ from branch_analysis_w_chain import *
 import os
 import pickle
 
+print("Python argv:", sys.argv)
+print("Current dir:", os.getcwd())
+print("Save folder:", save_folder)
+
 # Setting some vals
 f_trunc    = 15
 ncut       = 15
