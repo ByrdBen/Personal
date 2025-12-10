@@ -12,7 +12,7 @@ import pickle
 f_trunc    = 15
 ncut       = 15
 osc_trunc  = 75
-flux       = 0
+flux       = float(sys.argv[1])
 lookup     = False
 EJ  = 2.040
 EL  = .091
@@ -40,7 +40,6 @@ fit_params['flux'] = (flux, r'$\Phi_0$', None)
 dat_package, H_full = get_objs(fit_params, 'fluxonium', H_full,
                        update_flux=True)
 res = branch_analysis(dat_package, update_flux=True)
-res_list.append(res)
 del dat_package
 gc.collect()
 
@@ -49,6 +48,6 @@ save_folder = r"/home/babyrd/branches/Personal/results/test/v1/"  # or "./result
 os.makedirs(save_folder, exist_ok=True)  # create folder if it doesn't exist
 
 # Example: save multiple files
-filename = os.path.join(save_folder, f"res_flux_{f_idx}.pkl")
+filename = os.path.join(save_folder, f"res_flux_{flux}.pkl")
 with open(filename, "wb") as f:
     pickle.dump(res, f)
