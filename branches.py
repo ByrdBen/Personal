@@ -7,6 +7,7 @@ import os
 import pickle
 
 save_folder = r"/home/babyrd/branches/Personal/results/test/v1/"  # or "./results" for relative paths
+print("Save folder exists:", os.path.exists(save_folder), flush=True)
 print("Python argv:", sys.argv)
 print("Current dir:", os.getcwd())
 print("Save folder:", save_folder)
