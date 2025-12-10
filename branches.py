@@ -12,10 +12,10 @@ print("Current dir:", os.getcwd())
 print("Save folder:", save_folder)
 
 # Setting some vals
-f_trunc    = 15
-ncut       = 15
-osc_trunc  = 75
-flux       = float(sys.argv[1])
+f_trunc    = int(sys.argv[1])
+ncut       = f_trunc
+osc_trunc  = int(sys.argv[2])
+flux       = float(sys.argv[3])
 lookup     = False
 EJ  = 2.040
 EL  = .091
