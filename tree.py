@@ -3,6 +3,7 @@ import gc
 from tqdm import tqdm
 from dataclasses import dataclass
 from branch_analysis_w_chain import *
+from coupled_fluxonium import *
 import os
 import pickle
 
