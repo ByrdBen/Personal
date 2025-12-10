@@ -45,7 +45,7 @@ del dat_package
 gc.collect()
 
 # Path where you want to save all your files
-save_folder = r"/home/babyrd/branches/Personal/results/tests/v1"  # or "./results" for relative paths
+save_folder = r"/home/babyrd/branches/Personal/results/test/v1/"  # or "./results" for relative paths
 os.makedirs(save_folder, exist_ok=True)  # create folder if it doesn't exist
 
 # Example: save multiple files
