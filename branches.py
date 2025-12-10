@@ -40,8 +40,7 @@ fit_params.update({
 })
     
 fit_params['flux'] = (flux, r'$\Phi_0$', None)
-dat_package, H_full = get_objs(fit_params, 'fluxonium', H_full,
-                       update_flux=True)
+dat_package, H_full = get_objs(fit_params, 'fluxonium')
 res = branch_analysis(dat_package, update_flux=True)
 del dat_package
 gc.collect()
