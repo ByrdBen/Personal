@@ -6,7 +6,10 @@ import re
 save_folder = r"/home/babyrd/branches/Personal/results/composite/"  # or "./results" for relative paths
 
 res_list_loaded = []
-for f_idx in range(1):
+num_points =501
+flux_array = np.linspace(-.2, .6, num_points)
+
+for f_idx in flux_array:
     filename = os.path.join(save_folder, f"res_flux_{f_idx}.pkl")
     with open(filename, "rb") as f:
         res_list_loaded.append(pickle.load(f))
