@@ -38,6 +38,7 @@ num_JJ = 204
 g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, chain_trunc)
 print(g_chain)
 g_chain = 2*g_chain
+f_c = 1.6
 
 fit_params = {}
 # Tuple for moving stuff around
