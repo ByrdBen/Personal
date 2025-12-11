@@ -15,15 +15,6 @@ print("Save folder:", save_folder)
 
 chain_trunc = 6
 
-EC_a = .0001
-EJ_a = 20
-cg_a = 1e-6
-c_a  = 1e-6
-num_JJ = 204
-g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, chain_trunc)
-print(g_chain)
-g_chain = 2*g_chain
-
 # Setting some vals
 f_trunc    = int(sys.argv[1])
 ncut       = f_trunc
@@ -37,7 +28,17 @@ g_n = .062
 g_phi = 1j * g_n
 f_r = 6.627
 coupling_type = 'capacitive'
-chain_mode = False
+chain_mode = True
+
+EC_a = .0001
+EJ_a = 20
+cg_a = 1e-6
+c_a  = 1e-6
+num_JJ = 204
+g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, chain_trunc)
+print(g_chain)
+g_chain = 2*g_chain
+
 fit_params = {}
 # Tuple for moving stuff around
 
