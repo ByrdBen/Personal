@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 import re
 
-save_folder = r"/home/babyrd/branches/Personal/results/composite/"  # or "./results" for relative paths
+save_folder = r"/home/babyrd/branches/Personal/results/test/v2"  # or "./results" for relative paths
 
 res_list_loaded = []
 num_points =501
@@ -66,6 +66,8 @@ for key in output.keys():
 filename = os.path.join(save_folder, r"_0.pkl")
 with open(filename, "wb") as f:
     pickle.dump(dat1, f)
+
+print('here!')
 
 # Example: save multiple files
 filename = os.path.join(save_folder, r"_1.pkl")
