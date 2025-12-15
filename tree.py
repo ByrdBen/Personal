@@ -59,7 +59,7 @@ fit_params.update({
     
 fit_params['flux'] = (flux, r'$\Phi_0$', None)
 dat_package, H_full = get_objs(fit_params, 'fluxonium')
-res = branch_analysis(dat_package, update_flux=False)
+res_f, res = branch_analysis(dat_package, update_flux=False)
 
 # Path where you want to save all your files
 os.makedirs(save_folder, exist_ok=True)  # create folder if it doesn't exist
