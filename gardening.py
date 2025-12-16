@@ -3,14 +3,13 @@ import pickle
 import numpy as np
 import re
 
-save_folder = r"/home/babyrd/branches/Personal/results/test/v2"  # or "./results" for relative paths
+save_folder = r"/home/babyrd/branches/Personal/results/test/v1"  # or "./results" for relative paths
 
 res_list_loaded = []
-num_points =501
-flux_array = np.linspace(-.2, .6, num_points)
+filenames = sorted(os.listdir(save_folder))
 
-for f_idx in flux_array:
-    filename = os.path.join(save_folder, f"res_flux_{f_idx}.pkl")
+for name in filenames:
+    filename = os.path.join(save_folder, name)
     with open(filename, "rb") as f:
         res_list_loaded.append(pickle.load(f))
 
@@ -49,12 +48,13 @@ def combine_q_arrays(dict_list, q_pattern=("q0_", "q1_")):
         output[key] = np.stack(rows, axis=0)
     
     return output
-    
-dict_list = [res[1] for res in res_list]
-output = combine_q_arrays(dict_list, q_pattern=("q0_", "q1_"))
 
+dict_list = [res for res in res_list_loaded]
+output = combine_q_arrays(dict_list, q_pattern=("q0_", "q1_"))
 dat1 = {}
 dat0 = {}
+
+save_folder = r"/home/babyrd/branches/Personal/results/composite/"  # or "./results" for relative paths
 
 for key in output.keys():
     if 'q0_' in key:
@@ -63,13 +63,12 @@ for key in output.keys():
         dat1[key] = output[key]
 
 # Example: save multiple files
-filename = os.path.join(save_folder, r"_0.pkl")
-with open(filename, "wb") as f:
-    pickle.dump(dat1, f)
-
-print('here!')
-
-# Example: save multiple files
-filename = os.path.join(save_folder, r"_1.pkl")
+filename = os.path.join(save_folder, r"0.pkl")
 with open(filename, "wb") as f:
     pickle.dump(dat0, f)
+
+
+# Example: save multiple files
+filename = os.path.join(save_folder, r"1.pkl")
+with open(filename, "wb") as f:
+    pickle.dump(dat1, f)

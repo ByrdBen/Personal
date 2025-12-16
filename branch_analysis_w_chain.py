@@ -500,10 +500,8 @@ def branch_analysis(pkg: ObjPackage, update_flux):
         
     dat_package = (params, data, params_list, data_list, 
                     branches, dressed_evals, dressed_evecs)
-
-    dat_package_lean = (params, data)
     
-    return dat_package_lean
+    return params, data
 
 def comp_ss_dat(res_list, flux_arr, save=False):
     """

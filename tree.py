@@ -7,7 +7,7 @@ from coupled_fluxonium import *
 import os
 import pickle
 
-save_folder = r"/home/babyrd/branches/Personal/results/test/v2/"  # or "./results" for relative paths
+save_folder = r"/home/babyrd/branches/Personal/results/test/v1/"  # or "./results" for relative paths
 print("Save folder exists:", os.path.exists(save_folder), flush=True)
 print("Python argv:", sys.argv)
 print("Current dir:", os.getcwd())
@@ -35,7 +35,7 @@ EJ_a = 20
 cg_a = 1e-6
 c_a  = 1e-6
 num_JJ = 204
-g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, chain_trunc)
+g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, cdim)
 print(g_chain)
 g_chain = 2*g_chain
 f_c = 1.6
@@ -59,12 +59,12 @@ fit_params.update({
     
 fit_params['flux'] = (flux, r'$\Phi_0$', None)
 dat_package, H_full = get_objs(fit_params, 'fluxonium')
-res_f, res = branch_analysis(dat_package, update_flux=False)
+params, data = branch_analysis(dat_package, update_flux=False)
 
 # Path where you want to save all your files
 os.makedirs(save_folder, exist_ok=True)  # create folder if it doesn't exist
 
 # Example: save multiple files
-filename = os.path.join(save_folder, f"res_flux_{flux}.pkl")
+filename = os.path.join(save_folder, f"res_flux_{flux:.4f}.pkl")
 with open(filename, "wb") as f:
-    pickle.dump(res, f)
+    pickle.dump(data, f)
