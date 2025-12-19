@@ -13,6 +13,7 @@ save_folder = r"/home/babyrd/branches/Personal/results/test/v1"  # or "./results
 res_list_loaded = []
 filenames = sorted(os.listdir(save_folder))
 string_list = ["q0_", "q1_"]
+n_files = len(filenames)
 
 # Check first data file
 with open(os.path.join(save_folder, filenames[0]), "rb") as f:
