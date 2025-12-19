@@ -2,55 +2,45 @@ import os
 import pickle
 import numpy as np
 import re
-
+"""
+This function has quickly become a memory bottleneck. Some quick digging 
+suggests pre-allocating the memory, and populating the output dict 
+one entry at a time is more effecient than loading and manipulating
+all the data at once. Hoping this will fix it.
+"""
 save_folder = r"/home/babyrd/branches/Personal/results/test/v1"  # or "./results" for relative paths
 
 res_list_loaded = []
 filenames = sorted(os.listdir(save_folder))
+string_list = ["q0_", "q1_"]
 
-for name in filenames:
+# Check first data file
+with open(os.path.join(save_folder, filenames[0]), "rb") as f:
+    first_dict = pickle.load(f)
+
+# Grab useful keys
+keys = [
+    k for k in first_dict.keys()
+    if any(p in k for p in q_pattern) and re.search(r"_c\d+", k)]
+# Define shape
+array_shape = first_dict[keys[0]][0].shape
+
+# Pre-allocate space in output dict 
+output = {
+    k: np.zeros((n_files, *array_shape), dtype=first_dict[k][0].dtype)
+    for k in keys
+}
+
+# Open and store each individual data set into output, then delete from memory
+for i, name in enumerate(filenames):
     filename = os.path.join(save_folder, name)
     with open(filename, "rb") as f:
-        res_list_loaded.append(pickle.load(f))
+        d = pickle.load(f)
 
-def combine_q_arrays(dict_list, q_pattern=("q0_", "q1_")):
-    # ---- Step 1: Find all unique keys across all dicts ----
-    all_keys = set()
-    for d in dict_list:
-        for k in d.keys():
-            # Must contain q-pattern and also a "_cX" suffix
-            if any(p in k for p in q_pattern):
-                if re.search(r"_c\d+", k):
-                    all_keys.add(k)
+    for k in keys:
+        output[k][i] = d[k][0]
+    del d
     
-    # ---- Step 2: Determine array shape (from first available array) ----
-    array_shape = None
-    for d in dict_list:
-        for k in d:
-            if isinstance(d[k], tuple) and hasattr(d[k][0], "shape"):
-                array_shape = d[k][0].shape
-                break
-        if array_shape is not None:
-            break
-    
-    if array_shape is None:
-        raise ValueError("No arrays found in dictionaries.")
-    
-    # ---- Step 3: Construct the stitched output ----
-    output = {}
-    for key in all_keys:
-        rows = []
-        for d in dict_list:
-            if key in d:
-                rows.append(d[key][0])       # take the 0th element of the tuple
-            else:
-                rows.append(np.zeros(array_shape))
-        output[key] = np.stack(rows, axis=0)
-    
-    return output
-
-dict_list = [res for res in res_list_loaded]
-output = combine_q_arrays(dict_list, q_pattern=("q0_", "q1_"))
 dat1 = {}
 dat0 = {}
 
