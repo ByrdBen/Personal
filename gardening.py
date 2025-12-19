@@ -14,7 +14,7 @@ res_list_loaded = []
 filenames = sorted(os.listdir(save_folder))
 string_list = ["q0_", "q1_"]
 n_files = len(filenames)
-
+skipped_files = []
 # Check first data file
 with open(os.path.join(save_folder, filenames[0]), "rb") as f:
     first_dict = pickle.load(f)
@@ -23,6 +23,8 @@ with open(os.path.join(save_folder, filenames[0]), "rb") as f:
 keys = [
     k for k in first_dict.keys()
     if any(p in k for p in string_list) and re.search(r"_c\d+", k)]
+
+print(keys)
 # Define shape
 array_shape = first_dict[keys[0]][0].shape
 
@@ -37,9 +39,11 @@ for i, name in enumerate(filenames):
     filename = os.path.join(save_folder, name)
     with open(filename, "rb") as f:
         d = pickle.load(f)
-
-    for k in keys:
-        output[k][i] = d[k][0]
+    if all(keys in d.keys()):
+        for k in keys:
+            output[k][i] = d[k][0]
+    else:
+        skipped_files.append(name)
     del d
     
 dat1 = {}
@@ -52,6 +56,8 @@ for key in output.keys():
         dat0[key] = output[key]
     if 'q1_' in key:
         dat1[key] = output[key]
+
+print(skipped_files)
 
 # Example: save multiple files
 filename = os.path.join(save_folder, r"0.pkl")
