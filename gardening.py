@@ -21,7 +21,7 @@ with open(os.path.join(save_folder, filenames[0]), "rb") as f:
 # Grab useful keys
 keys = [
     k for k in first_dict.keys()
-    if any(p in k for p in q_pattern) and re.search(r"_c\d+", k)]
+    if any(p in k for p in string_list) and re.search(r"_c\d+", k)]
 # Define shape
 array_shape = first_dict[keys[0]][0].shape
 
