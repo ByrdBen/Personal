@@ -7,7 +7,15 @@ from coupled_fluxonium import *
 import os
 import pickle
 
-save_folder = r"/home/babyrd/branches/Personal/results/test/v1/"  # or "./results" for relative paths
+save_folder = r"/home/babyrd/branches/Personal/results/test/"  # or "./results" for relative paths
+folders = sorted(os.listdir(save_folder))
+
+for name in folder:
+    matches = re.findall(r'-?\d*\.?\d+', name)
+    res = [float(x) if '.' in x else int(x) for x in matches]
+    N = np.max(np.round(res)) + 1
+    
+save_folder = f"/home/babyrd/branches/Personal/results/test/v{N}/" 
 print("Save folder exists:", os.path.exists(save_folder), flush=True)
 print("Python argv:", sys.argv)
 print("Current dir:", os.getcwd())
@@ -37,8 +45,8 @@ c_a  = 1e-6
 num_JJ = 204
 g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, cdim)
 print(g_chain)
-g_chain = 2*g_chain
-f_c = 1.6
+g_chain = g_chain
+f_c = 15
 
 fit_params = {}
 # Tuple for moving stuff around

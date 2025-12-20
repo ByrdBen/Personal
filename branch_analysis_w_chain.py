@@ -21,22 +21,22 @@ Pt. 0: Gathering The Troops
 # Class structure for passing around lots of params
 @dataclass
 class ObjPackage:
-    rho_set:       Optional[np.ndarray] = None
+    rho_set      : Optional[np.ndarray] = None
     H_coupled_mat: Optional[np.ndarray] = None
-    c_evecs:       Optional[np.ndarray] = None
-    H_qubit_mat:   Optional[np.ndarray] = None
-    q_evals:       Optional[np.ndarray] = None
-    q_evecs:       Optional[np.ndarray] = None
-    H_res_mat:     Optional[np.ndarray] = None
-    r_evals:       Optional[np.ndarray] = None
-    r_evecs:       Optional[np.ndarray] = None
-    H_cm_mat:      Optional[np.ndarray] = None
-    cm_evals:      Optional[np.ndarray] = None
-    cm_evecs:      Optional[np.ndarray] = None
-    qdim:          Optional[int] = None
-    rdim:          Optional[int] = None
-    cdim:          Optional[int] = None
-
+    c_evecs      : Optional[np.ndarray] = None
+    H_qubit_mat  : Optional[np.ndarray] = None
+    q_evals      : Optional[np.ndarray] = None
+    q_evecs      : Optional[np.ndarray] = None
+    H_res_mat    : Optional[np.ndarray] = None
+    r_evals      : Optional[np.ndarray] = None
+    r_evecs      : Optional[np.ndarray] = None
+    H_cm_mat     : Optional[np.ndarray] = None
+    cm_evals     : Optional[np.ndarray] = None
+    cm_evecs     : Optional[np.ndarray] = None
+    qdim         : Optional[int] = None
+    rdim         : Optional[int] = None
+    cdim         : Optional[int] = None
+    get_full     : Optional[bool] = False
 
 def oscillator_hamiltonian(omega_r, dim):
     """
@@ -299,6 +299,7 @@ def branch_analysis(pkg: ObjPackage, update_flux):
     qdim           = pkg.qdim
     rdim           = pkg.rdim
     cdim           = pkg.cdim
+    get_full       = pkg.get_full
     
     """""""""
     Pt. 1: Object Initialization
@@ -486,22 +487,29 @@ def branch_analysis(pkg: ObjPackage, update_flux):
 
         labels.append(label)
 
-        # Populate data_temp
-        data_temp['n_r'] = (n_r_branch, None, None)
-        data_temp['n_q'] = (n_q_branch, None, ['n_r'])
-        if cdim:
-            data_temp['n_c'] = (n_c_branch, None, ['n_r'])
-        # Append to data_list
-        data_list.append(data_temp)
+        if get_full:
+            # Populate data_temp
+            data_temp['n_r'] = (n_r_branch, None, None)
+            data_temp['n_q'] = (n_q_branch, None, ['n_r'])
+            if cdim:
+                data_temp['n_c'] = (n_c_branch, None, ['n_r'])
+            # Append to data_list
+            data_list.append(data_temp)
+            # Add to global data dictionary, label is qubit pop
+            data[f'n_r_branch={label}'] = (n_r_branch, None, None)
+            data[f'n_q_branch={label}'] = (n_q_branch, None, [f'n_r_branch={label}'])
 
-        # Add to global data dictionary, label is qubit pop
-        data[f'n_r_branch={label}'] = (n_r_branch, None, None)
-        data[f'n_q_branch={label}'] = (n_q_branch, None, [f'n_r_branch={label}'])
-        
-    dat_package = (params, data, params_list, data_list, 
-                    branches, dressed_evals, dressed_evecs)
+        else:
+            if ('q0_' or 'q1_' in label):
+                data[f'n_r_branch={label}'] = (n_r_branch, None, None)
+                data[f'n_q_branch={label}'] = (n_q_branch, None, [f'n_r_branch={label}'])   
     
-    return params, data
+    if get_full:
+        dat_package = (params, data, params_list, data_list, 
+                        branches, dressed_evals, dressed_evecs)
+        return dat_package
+    else: 
+        return params, data
 
 def comp_ss_dat(res_list, flux_arr, save=False):
     """

@@ -12,6 +12,7 @@ save_folder = r"/home/babyrd/branches/Personal/results/test/v1"  # or "./results
 
 res_list_loaded = []
 filenames = sorted(os.listdir(save_folder))
+
 string_list = ["q0_", "q1_"]
 n_files = len(filenames)
 skipped_files = []
@@ -57,8 +58,6 @@ for key in output.keys():
     if 'q1_' in key:
         dat1[key] = output[key]
 
-print(skipped_files)
-
 # Example: save multiple files
 filename = os.path.join(save_folder, r"0.pkl")
 with open(filename, "wb") as f:
@@ -69,3 +68,10 @@ with open(filename, "wb") as f:
 filename = os.path.join(save_folder, r"1.pkl")
 with open(filename, "wb") as f:
     pickle.dump(dat1, f)
+
+# Write to text file
+filename = os.path.join(save_folder, r"skipped_points.txt")
+with open(filename, "w") as f:
+    for name in skipped_files:
+        line = name
+        f.write(line + "\n")
