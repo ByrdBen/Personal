@@ -10,7 +10,7 @@ import pickle
 save_folder = r"/home/babyrd/branches/Personal/results/test/"  # or "./results" for relative paths
 folders = sorted(os.listdir(save_folder))
 
-for name in folder:
+for name in folders:
     matches = re.findall(r'-?\d*\.?\d+', name)
     res = [float(x) if '.' in x else int(x) for x in matches]
     N = np.max(np.round(res)) + 1
@@ -49,8 +49,6 @@ g_chain = g_chain
 f_c = 15
 
 fit_params = {}
-# Tuple for moving stuff around
-
 # This may be excessive but it feels more flexible
 # if things need to change
 var_list = ['f_trunc', 'ncut', 'osc_trunc', 'flux', 'lookup', 'EJ', 'EL', 'EC', 
