@@ -5,7 +5,7 @@ import qutip as qt
 import re
 
 
-class CoupledFluxonium(object):
+class FluxoniumMM(object):
     """
     Generates coupled fluxonium/resonator hamiltonian.
     """
@@ -14,9 +14,8 @@ class CoupledFluxonium(object):
 
         # Set of allowed attributes
         attr = ['EJ', 'EC', 'EL', 'flux', 'ncut', 
-                'f_trunc', 'f_r', 'g_n', 'g_phi', 'g_chain',
-                'osc_trunc', 'chain_mode', 'chain_trunc', 'f_c', 'g_chain',
-                'coupling_type']
+                'f_trunc', 'mode_list', 'trunc_list', 
+                'f_list', 'g_list', 'coupling_list']
         
         # Boolean to speed up computation regarding lookup table
         lookup = params['lookup'][0]
@@ -36,57 +35,20 @@ class CoupledFluxonium(object):
         fluxonium = scq.Fluxonium(EJ=self.EJ, EC=self.EC, EL=self.EL, flux=self.flux, 
                                   cutoff=self.ncut, truncated_dim=self.f_trunc, id_str="Fl")
         self.fluxonium = fluxonium
-        
-        # Make resonator
-        resonator = scq.Oscillator(self.f_r, 1/np.sqrt(2), truncated_dim=self.osc_trunc, 
-                                   id_str="Res")
-        
-        self.resonator = resonator
+        subspace_list = [fluxonium]
 
-        if (self.chain_mode):
-            # Make chain mode
-            chain_mode = scq.Oscillator(self.f_c, 1/np.sqrt(2), truncated_dim=self.chain_trunc, 
-                               id_str="Chain")
-            
-            self.chain_mode = chain_mode
+        # Adding modes
+        for i, mode in enumerate(self.mode_list):
+            mode = scq.Oscillator(self.f_list[i], 1/np.sqrt(2), truncated_dim=self.trunc_list[i], 
+                           id_str=f"mode{i}")
+            subspace_list.append(mode)
+            self.add_interaction(mode, coupling_list[i])
 
-            # Combine circuit elements
-            hs = scq.HilbertSpace([fluxonium, resonator, chain_mode])
+        # Combine circuit elements
+        hs = scq.HilbertSpace(subspace_list)
 
-        else:
-            # Combine circuit elements
-            hs = scq.HilbertSpace([fluxonium, resonator])
-            
-        # Turn on coupling
-        if (self.coupling_type == "capacitive"): 
-            hs.add_interaction(
-                expr=f"{self.g_n} * n * (a + adag)",  # g is directly inserted
-                op1=("n", fluxonium.n_operator(), fluxonium),
-                op2=("a", resonator.annihilation_operator(), resonator),
-                op3=("adag", resonator.creation_operator(), resonator),
-                add_hc=False
-            )
-        if (self.coupling_type == "inductive"):
-            hs.add_interaction(
-                expr=f"{self.g_phi} * phi * (a - adag)",  # g is directly inserted
-                op1=("phi", fluxonium.phi_operator(), fluxonium),
-                op2=("a", resonator.annihilation_operator(), resonator),
-                op3=("adag", resonator.creation_operator(), resonator),
-                add_hc=False
-            )
-
-        if self.chain_mode:
-            hs.add_interaction(
-                expr=f"{self.g_chain} * sin_phi * (a + adag)",  # g is directly inserted
-                op1=("sin_phi", fluxonium.sin_phi_operator(beta = -self.flux), fluxonium),
-                op2=("a", chain_mode.annihilation_operator(), chain_mode),
-                op3=("adag", chain_mode.creation_operator(), chain_mode),
-                add_hc=False
-            )
-
-            
+        # Make some definitions for later
         self.hs = hs
-        
         H_full = hs.hamiltonian()
         self.H = H_full        
         
@@ -169,55 +131,66 @@ class CoupledFluxonium(object):
         n = self.fluxonium.n_operator()
         return qt.tensor(qt.Qobj(n), qt.qeye(self.osc_trunc))
     
-    def update_flux(self, flux, lookup=False, print_update=False):
-        """
-        Update value of flux in fluxonium, need to rebuild hamiltonian
-        Lookup table generation optional, computationally expensive
-        """
+    def update_flux(self, flux, lookup=False):
         self.flux = flux
         self.fluxonium.flux = flux
-        if self.chain_mode:
-            self.hs = scq.HilbertSpace([self.fluxonium, self.resonator, self.chain_mode])
-        else:
-            self.hs = scq.HilbertSpace([self.fluxonium, self.resonator])
-        
-        
-        # Turn on coupling
-        if (self.coupling_type == "capacitive"): 
-            self.hs.add_interaction(
-                expr=f"{self.g_n} * n * (a + adag)",  # g is directly inserted
-                op1=("n", self.fluxonium.n_operator(), self.fluxonium),
-                op2=("a", self.resonator.annihilation_operator(), self.resonator),
-                op3=("adag", self.resonator.creation_operator(), self.resonator),
-                add_hc=False
-            )
-        if (self.coupling_type == "inductive"):
-            self.hs.add_interaction(
-                expr=f"{self.g_phi} * phi * (a - adag)",  # g is directly inserted
-                op1=("phi", self.fluxonium.phi_operator(), self.fluxonium),
-                op2=("a", self.resonator.annihilation_operator(), self.resonator),
-                op3=("adag", self.resonator.creation_operator(), self.resonator),
-                add_hc=False
-            )
-        if self.chain_mode:
-            self.hs.add_interaction(
-                expr=f"{self.g_chain} * sin_phi * (a + adag)",  # g is directly inserted
-                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
-                op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
-                op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
-                add_hc=False
-            )
-            
-        self.H = self.hs.hamiltonian()
+        self.params.flux = flux
+        # rebuild Hilbert space
+        self.__init__(self, self.params)   
         
         if lookup:
             self.hs.generate_lookup()
-            
+        
         if print_update:
             print(r'Flux set to ' + f'{flux:.2f} ' + r'$\Phi_0$')
+
+def add_interaction(self, mode, coupling_type):
+    
+    if coupling_type == "chain":
+        self.hs.add_interaction(
+            expr=f"{self.g_chain} * sin_phi * (a + adag)",  # g is directly inserted
+            op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
+            op2=("a", mode.annihilation_operator(), mode),
+            op3=("adag", mode.creation_operator(), mode),
+            add_hc=False)
+    
+        self.hs.add_interaction(
+            expr=f"{self.g_chain**2 / (2 * self.EJ)} * cos_phi * (a + adag)**2",  # g is directly inserted
+            op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -self.flux), self.fluxonium),
+            op2=("a", mode.annihilation_operator(), mode),
+            op3=("adag", mode.creation_operator(), mode),
+            add_hc=False)
+    
+        self.hs.add_interaction(
+            expr=f"{-self.EJ_a / (4 * self.N**2)} * (phi**2) * (a + adag)**2",  # g is directly inserted
+            op1=("phi", self.fluxonium.phi_operator(), self.fluxonium),
+            op2=("a", mode.annihilation_operator(), mode),
+            op3=("adag", mode.creation_operator(), mode),
+            add_hc=False)
+    
+    if coupling_type == "capacitive":
+        self.hs.add_interaction(
+            expr=f"{self.g_n} * n * (a + adag)",  # g is directly inserted
+            op1=("n", self.fluxonium.n_operator(), self.fluxonium),
+            op2=("a", mode.annihilation_operator(), mode),
+            op3=("adag", mode.creation_operator(), mode),
+            add_hc=False)
+
+    if coupling_type == "inductive":
+        self.hs.add_interaction(
+            expr=f"{self.g_phi} * phi * (a - adag)",  # g is directly inserted
+            op1=("phi", self.fluxonium.phi_operator(), self.fluxonium),
+            op2=("a", self.resonator.annihilation_operator(), self.resonator),
+            op3=("adag", self.resonator.creation_operator(), self.resonator),
+            add_hc=False)
 
 def get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, N):
     # See notes
     term1 = 2 * EC_a / EJ_a 
     term2 = 1 / (1 + (cg_a / c_a)*(num_JJ**2/(2**2 * np.pi**2)))
     return EJ * (term1 * term2) ** (1/4) * N ** (1/2)
+
+
+def LHL_freq(LL, CL, k, del_x):
+    # Mode Structure in Superconducting Metamaterial Transmission Line Resonators by Haoyang Wang 2018
+    return 1 / (2 * np.sqrt(LL * CL)) * 1 / (np.sin((k+1) * del_x / 2))
