@@ -7,7 +7,7 @@ from coupled_fluxonium import *
 import os
 import pickle
 
-save_folder = r"/home/babyrd/branches/Personal/results/test/"  # or "./results" for relative paths
+save_folder = r"/home/babyrd/branches/Personal/MIST/results/test/"  # or "./results" for relative paths
 folders = sorted(os.listdir(save_folder))
 
 for name in folders:
