@@ -8,7 +8,7 @@ suggests pre-allocating the memory, and populating the output dict
 one entry at a time is more effecient than loading and manipulating
 all the data at once. Hoping this will fix it.
 """
-save_folder = r"/home/babyrd/branches/Personal/results/test/v1"  # or "./results" for relative paths
+save_folder = r"/home/babyrd/branches/Personal/results/test/v4"  # or "./results" for relative paths
 
 res_list_loaded = []
 filenames = sorted(
