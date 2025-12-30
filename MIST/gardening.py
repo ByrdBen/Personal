@@ -41,8 +41,15 @@ output = {
 # Open and store each individual data set into output, then delete from memory
 for i, name in enumerate(filenames):
     filename = os.path.join(save_folder, name)
-    with open(filename, "rb") as f:
-        d = pickle.load(f)
+    
+    try:
+        with open(filename, "rb") as f:
+            d = pickle.load(f)
+            
+    except (pickle.UnpicklingError, EOFError) as e:
+        skipped_files.append(name)
+        continue
+        
     if all(key in d for key in keys):
         for k in keys:
             output[k][i] = d[k][0]
