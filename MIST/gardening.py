@@ -11,7 +11,10 @@ all the data at once. Hoping this will fix it.
 save_folder = r"/home/babyrd/branches/Personal/results/test/v1"  # or "./results" for relative paths
 
 res_list_loaded = []
-filenames = sorted(os.listdir(save_folder))
+filenames = sorted(
+    f for f in os.listdir(save_folder)
+    if f.endswith(".pkl")
+)
 
 string_list = ["q0_", "q1_"]
 n_files = len(filenames)
