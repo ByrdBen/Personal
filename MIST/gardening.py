@@ -13,6 +13,7 @@ save_folder = r"/home/babyrd/branches/Personal/results/test/"  # or "./results" 
 folders = os.listdir(save_folder)
 
 for folder in folders:
+    folder = os.path.join(save_folder, folder)
     basename = os.path.basename(folder)
     
     res_list_loaded = []
@@ -90,3 +91,4 @@ for folder in folders:
         for name in skipped_files:
             line = name
             f.write(line + "\n")
+    print(basename + ' has been tended to!')
