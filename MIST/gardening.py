@@ -26,7 +26,7 @@ for folder in folders:
     n_files = len(filenames)
     skipped_files = []
     # Check first data file
-    with open(os.path.join(save_folder, filenames[0]), "rb") as f:
+    with open(os.path.join(folder, filenames[0]), "rb") as f:
         first_dict = pickle.load(f)
     
     # Grab useful keys
