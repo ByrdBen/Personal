@@ -255,7 +255,7 @@ def get_map(PCA, used_indices=None):
     # Return both final_map and newly assigned indices
     return final_map, assigned
 
-def branch_analysis(pkg: ObjPackage, update_flux):
+def branch_analysis(pkg: ObjPackage, update_flux, ncrit_mode=False):
     """
     Inputs:
       - H_coupled_mat        : full coupled hamiltonian (N,N), N = qdim*rdim*cdim          (numpy array)
