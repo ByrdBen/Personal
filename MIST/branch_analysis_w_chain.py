@@ -503,6 +503,8 @@ def branch_analysis(pkg: ObjPackage, update_flux, ncrit_mode=False):
             if ('q0_' or 'q1_' in label):
                 data[f'n_r_branch={label}'] = (n_r_branch, None, None)
                 data[f'n_q_branch={label}'] = (n_q_branch, None, [f'n_r_branch={label}'])   
+            if cdim:
+                data[f'n_c_branch={label}'] = (n_c_branch, None, [f'n_r_branch={label}'])
     
     if get_full:
         dat_package = (params, data, params_list, data_list, 
