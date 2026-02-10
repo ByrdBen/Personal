@@ -8,18 +8,15 @@ import os
 import pickle
 
 save_folder = r"/home/babyrd/branches/Personal/MIST/results/test/"  # or "./results" for relative paths
-folders = sorted(os.listdir(save_folder))
-
-for name in folders:
-    matches = re.findall(r'-?\d*\.?\d+', name)
-    res = [float(x) if '.' in x else int(x) for x in matches]
-    N = np.max(np.round(res)) + 1
     
-save_folder = f"/home/babyrd/branches/Personal/results/test/v{N}/" 
+save_folder = f"/home/babyrd/branches/Personal/results/test/{sys.argv[6]}/" 
 print("Save folder exists:", os.path.exists(save_folder), flush=True)
 print("Python argv:", sys.argv)
 print("Current dir:", os.getcwd())
 print("Save folder:", save_folder)
+
+chain_ratio   = float(sys.argv[4])
+chain_product = float(sys.argv[5])
 
 chain_trunc = 6
 
@@ -38,15 +35,15 @@ f_r = 6.627
 coupling_type = 'capacitive'
 chain_mode = True
 
-EC_a = .0001
-EJ_a = 20
+EJ_a = np.sqrt(chain_product / chain_ratio)
+EC_a = np.sqrt(chain_product * chain_ratio)
 cg_a = 1e-6
 c_a  = 1e-6
 num_JJ = 204
 g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, chain_trunc)
 print(g_chain)
 g_chain = g_chain
-f_c = 15
+f_c = np.sqrt(8 * EJ_a * EC_a)
 
 fit_params = {}
 # This may be excessive but it feels more flexible
