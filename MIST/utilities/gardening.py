@@ -9,16 +9,16 @@ one entry at a time is more effecient than loading and manipulating
 all the data at once. Hoping this will fix it.
 """
 
-save_folder = r"/home/babyrd/branches/Personal/results/test/"  # or "./results" for relative paths
-folders = os.listdir(save_folder)
+load_folder = r"/home/babyrd/branches/Personal/results/test/"  # or "./results" for relative paths
+save_folder = r"/home/babyrd/branches/Personal/results/test/composite/"  # or "./results" for relative paths
+folders = os.listdir(load_folder)
 
 for folder in folders:
-    folder = os.path.join(save_folder, folder)
-    basename = os.path.basename(folder)
-    
+    print(folder)
+    path_full = os.path.join(load_folder, folder)
     res_list_loaded = []
     filenames = sorted(
-        f for f in os.listdir(folder)
+        f for f in os.listdir(path_full)
         if f.endswith(".pkl")
     )
     
@@ -26,8 +26,15 @@ for folder in folders:
     n_files = len(filenames)
     skipped_files = []
     # Check first data file
-    with open(os.path.join(folder, filenames[0]), "rb") as f:
-        first_dict = pickle.load(f)
+    first_dict = None
+    for name in filenames:
+        try:
+            with open(os.path.join(path_full, name), "rb") as f:
+                first_dict = pickle.load(f)
+            print(f"Using {name} as template")
+            break
+        except (pickle.UnpicklingError, EOFError):
+            skipped_files.append(name)
     
     # Grab useful keys
     keys = [
@@ -46,7 +53,7 @@ for folder in folders:
     
     # Open and store each individual data set into output, then delete from memory
     for i, name in enumerate(filenames):
-        filename = os.path.join(save_folder, name)
+        filename = os.path.join(path_full, name)
         
         try:
             with open(filename, "rb") as f:
@@ -66,8 +73,6 @@ for folder in folders:
     dat1 = {}
     dat0 = {}
     
-    save_folder = r"/home/babyrd/branches/Personal/results/test/composite/"  # or "./results" for relative paths
-    
     for key in output.keys():
         if 'q0_' in key:
             dat0[key] = output[key]
@@ -75,20 +80,20 @@ for folder in folders:
             dat1[key] = output[key]
             
     # Example: save multiple files
-    filename = os.path.join(save_folder, f"{basename}_0.pkl")
+    filename = os.path.join(save_folder, f"{folder}_0.pkl")
     with open(filename, "wb") as f:
         pickle.dump(dat0, f)
     
     
     # Example: save multiple files
-    filename = os.path.join(save_folder, f"{basename}_1.pkl")
+    filename = os.path.join(save_folder, f"{folder}_1.pkl")
     with open(filename, "wb") as f:
         pickle.dump(dat1, f)
     
     # Write to text file
-    filename = os.path.join(save_folder, f"{basename}_skipped_points.txt")
+    filename = os.path.join(save_folder, f"{folder}_skipped_points.txt")
     with open(filename, "w") as f:
         for name in skipped_files:
-            flux_val = re.sub("[^0-9]", "", name)
-            f.write(flux_val + "\n")
-    print(basename + ' has been tended to!')
+            line = name
+            f.write(line + "\n")
+    print(str(folder) + ' has been tended to!')

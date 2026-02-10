@@ -65,3 +65,48 @@ def peak_detection_2(data, key, ref_val, flux_range, threshold=.5, cluster_windo
 
       return np.cumsum(peaks_vs_nr), density_vs_nr, n_crit
 
+def plot_trajectories(data, q_key, c_key):
+    ref_dat = data[q_key]
+    num_pts = len(ref_dat)
+    flux_vals = np.linspace(-.2, .6, num_pts)
+    from matplotlib import colors, cm 
+    fig, ax = plt.subplots()
+    cmap = cm.viridis
+    norm = colors.Normalize(vmin=flux_vals.min(), vmax=flux_vals.max())
+    
+    for j in range(num_pts):
+        x = data[q_key][j]
+        y = data[c_key][j]
+        
+        dx = np.gradient(x)
+        dy = np.gradient(y)
+        speed = np.sqrt(dx**2 + dy**2)
+    
+        cut = np.percentile(speed, 90)
+        mask = speed < cut
+        
+        N = 1
+        i = np.where(mask)[0][::N]
+        
+        Q = ax.quiver(
+            x[i], y[i],
+            dx[i], dy[i],
+            np.full(len(i), flux_vals[j]),
+            cmap='plasma',
+            norm=norm,
+            angles='xy',
+            scale_units='xy',
+            scale=0.15,
+            alpha=.8
+        )
+    
+    fig.colorbar(Q, ax=ax, label=r"External Flux $(\Phi_0)$")
+    plt.xlabel(r"$\langle n_q(\langle n_r\rangle) \rangle$")
+    plt.ylabel(r"$\langle n_c(\langle n_r\rangle) \rangle$")
+    plt.title(r"MIST Trajectory, $|\Psi_{init}\rangle = |0, 0, 0\rangle$")
+    plt.grid(alpha=.2)
+    plt.ylim(0, 3.5)
+    plt.xlim(0, 12)
+    if save:
+        plt.savefig('Ground_Trajectory.png')
+    plt.show()
