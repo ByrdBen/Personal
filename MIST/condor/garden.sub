@@ -1,6 +1,6 @@
 executable     = conda_wrapper.sh
 
-arguments      = gardening.py
+arguments      = utilities/gardening.py
 output         = outputs/garden.out
 error          = errors/garden.err
 log            = logs/garden.log

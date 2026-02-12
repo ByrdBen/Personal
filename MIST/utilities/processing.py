@@ -1,4 +1,6 @@
 import numpy as np 
+import matplotlib.pyplot as plt
+from matplotlib import colors, cm 
 
 def peak_detection(data, key, ref_val, freq_range, threshold=.5):
     MIST_dat = data[key].T
@@ -65,12 +67,14 @@ def peak_detection_2(data, key, ref_val, flux_range, threshold=.5, cluster_windo
 
       return np.cumsum(peaks_vs_nr), density_vs_nr, n_crit
 
-def plot_trajectories(data, q_key, c_key):
+def plot_trajectories(data, q_key, c_key, save=False):
     ref_dat = data[q_key]
     num_pts = len(ref_dat)
     flux_vals = np.linspace(-.2, .6, num_pts)
-    from matplotlib import colors, cm 
     fig, ax = plt.subplots()
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+
     cmap = cm.viridis
     norm = colors.Normalize(vmin=flux_vals.min(), vmax=flux_vals.max())
     
@@ -82,7 +86,7 @@ def plot_trajectories(data, q_key, c_key):
         dy = np.gradient(y)
         speed = np.sqrt(dx**2 + dy**2)
     
-        cut = np.percentile(speed, 90)
+        cut = np.percentile(speed, 98)
         mask = speed < cut
         
         N = 1
@@ -105,8 +109,9 @@ def plot_trajectories(data, q_key, c_key):
     plt.ylabel(r"$\langle n_c(\langle n_r\rangle) \rangle$")
     plt.title(r"MIST Trajectory, $|\Psi_{init}\rangle = |0, 0, 0\rangle$")
     plt.grid(alpha=.2)
-    plt.ylim(0, 3.5)
-    plt.xlim(0, 12)
+    
+    plt.ylim(1e-3, 10)
+    plt.xlim(1e-3, 20)
     if save:
         plt.savefig('Ground_Trajectory.png')
     plt.show()

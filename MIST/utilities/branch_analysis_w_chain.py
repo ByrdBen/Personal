@@ -3,8 +3,8 @@ from tqdm import tqdm
 import numpy as np
 from scipy.linalg import eigh  
 from scipy.sparse.linalg import eigsh  
-from utilities.coupled_transmon import CoupledTransmon
-from utilities.coupled_fluxonium import CoupledFluxonium
+from coupled_transmon import CoupledTransmon
+from coupled_fluxonium import CoupledFluxonium
 import qutip as qt
 import matplotlib.pyplot as plt
 import scqubits as scq
@@ -479,7 +479,6 @@ def branch_analysis(pkg: ObjPackage, update_flux, ncrit_mode=False):
         if cdim:
             n_c_branch = np.abs(np.asarray(n_list3)[idx_list])
             n_c_branch = n_c_branch[sort_idx]
-            t_idx = c_idx * qdim + q_idx
 
             # Label this branch by initial qubit population
             q_idx = t_idx % qdim
@@ -503,7 +502,7 @@ def branch_analysis(pkg: ObjPackage, update_flux, ncrit_mode=False):
             data[f'n_q_branch={label}'] = (n_q_branch, None, [f'n_r_branch={label}'])
 
         else:
-            if ('q0_' or 'q1_' in label):
+            if ('q0_' in label) or ('q1_' in label):
                 data[f'n_r_branch={label}'] = (n_r_branch, None, None)
                 data[f'n_q_branch={label}'] = (n_q_branch, None, [f'n_r_branch={label}'])   
             if cdim:
