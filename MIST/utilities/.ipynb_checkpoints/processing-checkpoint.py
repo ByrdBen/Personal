@@ -1,7 +1,9 @@
 import numpy as np 
+import matplotlib.pyplot as plt
+from matplotlib import colors, cm 
 
 def peak_detection(data, key, ref_val, freq_range, threshold=.5):
-    MIST_dat = data[key].T
+    MIST_dat = np.flipud(data[key].T)
     shifted_dat = np.abs(MIST_dat - ref_val)
     deriv = np.gradient(shifted_dat, axis=0)
     num_peaks = 0
@@ -15,27 +17,28 @@ def peak_detection(data, key, ref_val, freq_range, threshold=.5):
     
     return num_peaks, peaks_per
 
-def get_MIST_dens(data, freq_range, n_r):
+def get_MIST_dens(data, freq_range, n_r, threshold=.5):
     key_list = [key for key in data.keys() if 'n_q' in key]
     for key in key_list:
         if '=q0' in key:
             ref_val = 0
         if '=q1' in key:
             ref_val = 1
-        num_peaks, peaks_per, n_crit = peak_detection_2(data, key, ref_val, freq_range)
+        num_peaks, peaks_per, n_crit = peak_detection_2(data, key, ref_val, freq_range, threshold=threshold)
         
         tot_key  = key + '_tot'
         dens_key = key + '_dens'
         crit_key = key + '_n_crit'
-        data[tot_key] = (num_peaks, None, ['n_r'])
-        data[dens_key] = (peaks_per, None, ['n_r'])
-        data[crit_key] = (n_crit, None, ['flux'])
-        data[r'$\langle n_r \rangle$'] = (n_r, None, None) 
+        dat = data.copy()
+        dat[tot_key] = (num_peaks, None, ['n_r'])
+        dat[dens_key] = (peaks_per, None, ['n_r'])
+        dat[crit_key] = (n_crit, None, ['flux'])
+        dat[r'$\langle n_r \rangle$'] = (n_r, None, None) 
         
-    return data
+    return dat
 
 def peak_detection_2(data, key, ref_val, flux_range, threshold=.5, cluster_window=5):
-      MIST_dat = np.flipud(data[key])  # shape (n_flux, n_r) - don't transpose
+      MIST_dat = np.flipud(data[key].T)  # shape (n_flux, n_r) - don't transpose
       shifted_dat = np.abs(MIST_dat - ref_val)
       deriv = np.abs(np.gradient(shifted_dat, axis=1))  # along n_r
 
@@ -57,7 +60,7 @@ def peak_detection_2(data, key, ref_val, flux_range, threshold=.5, cluster_windo
           for cluster in clusters:
               center = cluster[len(cluster) // 2]
               peaks_vs_nr[center] += 1
-          n_crit[flux_idx] = (clusters[0][-1] - clusters[0][0])/2
+          n_crit[flux_idx] = clusters[0][0]
     
         
       # peaks_vs_nr[i] = number of flux points with a transition at n_r = i
@@ -65,12 +68,14 @@ def peak_detection_2(data, key, ref_val, flux_range, threshold=.5, cluster_windo
 
       return np.cumsum(peaks_vs_nr), density_vs_nr, n_crit
 
-def plot_trajectories(data, q_key, c_key):
+def plot_trajectories(data, q_key, c_key, init_val, save=False):
     ref_dat = data[q_key]
     num_pts = len(ref_dat)
-    flux_vals = np.linspace(-.2, .6, num_pts)
-    from matplotlib import colors, cm 
-    fig, ax = plt.subplots()
+    flux_vals = np.linspace(0, .5, num_pts)
+    fig, ax = plt.subplots(dpi = 500)
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+
     cmap = cm.viridis
     norm = colors.Normalize(vmin=flux_vals.min(), vmax=flux_vals.max())
     
@@ -82,10 +87,10 @@ def plot_trajectories(data, q_key, c_key):
         dy = np.gradient(y)
         speed = np.sqrt(dx**2 + dy**2)
     
-        cut = np.percentile(speed, 90)
+        cut = np.percentile(speed, 80)
         mask = speed < cut
         
-        N = 1
+        N = 3
         i = np.where(mask)[0][::N]
         
         Q = ax.quiver(
@@ -97,7 +102,8 @@ def plot_trajectories(data, q_key, c_key):
             angles='xy',
             scale_units='xy',
             scale=0.15,
-            alpha=.8
+            alpha=.5,
+            
         )
     
     fig.colorbar(Q, ax=ax, label=r"External Flux $(\Phi_0)$")
@@ -105,8 +111,9 @@ def plot_trajectories(data, q_key, c_key):
     plt.ylabel(r"$\langle n_c(\langle n_r\rangle) \rangle$")
     plt.title(r"MIST Trajectory, $|\Psi_{init}\rangle = |0, 0, 0\rangle$")
     plt.grid(alpha=.2)
-    plt.ylim(0, 3.5)
-    plt.xlim(0, 12)
+    
+    plt.ylim(1e-3, 10)
+    plt.xlim(1e-3 + init_val, 20)
     if save:
         plt.savefig('Ground_Trajectory.png')
     plt.show()

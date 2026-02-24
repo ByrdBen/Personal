@@ -10,7 +10,7 @@ all the data at once. Hoping this will fix it.
 """
 
 load_folder = r"/home/babyrd/branches/Personal/results/test/"  # or "./results" for relative paths
-save_folder = r"/home/babyrd/branches/Personal/results/test/composite/"  # or "./results" for relative paths
+save_folder = r"/home/babyrd/branches/Personal/results/composite/"  # or "./results" for relative paths
 folders = os.listdir(load_folder)
 
 for folder in folders:

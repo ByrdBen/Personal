@@ -199,7 +199,7 @@ def ladder_levels(vecs, c_evecs, b_adag, new_vecs=False):
         vecs = [b_adag @ vec for vec in vecs]  # update vecs
 
     # Convert lists of Qobj to NumPy arrays
-    vecs_array  = np.column_stack([vec.squeeze() for vec in vecs])   # (N_total, N_vecs)
+    vecs_array    = np.column_stack([vec.squeeze() for vec in vecs])     # (N_total, N_vecs)
     c_evecs_array = np.column_stack([vec.squeeze() for vec in c_evecs])  # (N_total, N_cvecs)
 
     # Compute PCA in fully vectorized way
@@ -479,7 +479,6 @@ def branch_analysis(pkg: ObjPackage, update_flux, ncrit_mode=False):
         if cdim:
             n_c_branch = np.abs(np.asarray(n_list3)[idx_list])
             n_c_branch = n_c_branch[sort_idx]
-            t_idx = c_idx * qdim + q_idx
 
             # Label this branch by initial qubit population
             q_idx = t_idx % qdim
@@ -503,7 +502,7 @@ def branch_analysis(pkg: ObjPackage, update_flux, ncrit_mode=False):
             data[f'n_q_branch={label}'] = (n_q_branch, None, [f'n_r_branch={label}'])
 
         else:
-            if ('q0_' or 'q1_' in label):
+            if ('q0_' in label) or ('q1_' in label):
                 data[f'n_r_branch={label}'] = (n_r_branch, None, None)
                 data[f'n_q_branch={label}'] = (n_q_branch, None, [f'n_r_branch={label}'])   
             if cdim:

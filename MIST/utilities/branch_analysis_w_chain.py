@@ -3,8 +3,8 @@ from tqdm import tqdm
 import numpy as np
 from scipy.linalg import eigh  
 from scipy.sparse.linalg import eigsh  
-from coupled_transmon import CoupledTransmon
-from coupled_fluxonium import CoupledFluxonium
+from utilities.coupled_transmon import CoupledTransmon
+from utilities.coupled_fluxonium import CoupledFluxonium
 import qutip as qt
 import matplotlib.pyplot as plt
 import scqubits as scq
@@ -199,7 +199,7 @@ def ladder_levels(vecs, c_evecs, b_adag, new_vecs=False):
         vecs = [b_adag @ vec for vec in vecs]  # update vecs
 
     # Convert lists of Qobj to NumPy arrays
-    vecs_array  = np.column_stack([vec.squeeze() for vec in vecs])   # (N_total, N_vecs)
+    vecs_array    = np.column_stack([vec.squeeze() for vec in vecs])     # (N_total, N_vecs)
     c_evecs_array = np.column_stack([vec.squeeze() for vec in c_evecs])  # (N_total, N_cvecs)
 
     # Compute PCA in fully vectorized way
