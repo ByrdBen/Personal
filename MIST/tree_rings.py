@@ -2,12 +2,12 @@ import sys
 import gc
 from tqdm import tqdm
 from dataclasses import dataclass
-from branch_analysis_w_chain import *
+from rings import *
 from coupled_fluxonium import *
 import os
 import pickle
     
-save_folder = f"/home/babyrd/branches/Personal/results/test/{sys.argv[6]}/" 
+save_folder = f"/home/babyrd/branches/Personal/results/symmetry/{sys.argv[6]}/" 
 print("Save folder exists:", os.path.exists(save_folder), flush=True)
 print("Python argv:", sys.argv)
 print("Current dir:", os.getcwd())
@@ -58,9 +58,15 @@ fit_params.update({
     for name in var_list
 })
     
-fit_params['flux'] = (flux, r'$\Phi_0$', None)
-dat_package, H_full = get_objs(fit_params, 'fluxonium')
-params, data = branch_analysis(dat_package, update_flux=False)
+fit_params['flux']      = (flux, r'$\Phi_0$', None)
+dat_package, H_full     = get_objs(fit_params, 'fluxonium')
+P_list, N_list, Nc_list = get_expectation_vals(dat_package)
+
+# Package the data
+data = {}
+data['parity']                  = (P_list, None, None)
+data['excitation_number']       = (N_list, None, None)
+data['chain_occupation_number'] = (Nc_list, None, None)
 
 # Path where you want to save all your files
 os.makedirs(save_folder, exist_ok=True)  # create folder if it doesn't exist
