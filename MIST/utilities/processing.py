@@ -1,6 +1,8 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 from matplotlib import colors, cm 
+import pickle
+import os as os
 
 def peak_detection(data, key, ref_val, freq_range, threshold=.5):
     MIST_dat = np.flipud(data[key].T)
@@ -117,3 +119,44 @@ def plot_trajectories(data, q_key, c_key, init_val, save=False):
     if save:
         plt.savefig('Ground_Trajectory.png')
     plt.show()
+
+def get_expects(folder, cdim):
+    sub_folders = os.listdir(folder)
+    N_E = len(sub_folders)
+    N_flux = len(os.listdir(os.path.join(folder, sub_folders[0])))
+    
+    first_sub = os.path.join(folder, sub_folders[0])
+    first_file = os.path.join(first_sub, os.listdir(first_sub)[0])
+    with open(first_file, "rb") as f:
+        d = pickle.load(f)
+        c_bins = np.arange(0, cdim+1, 1.)
+        unique_c_bins = sorted(set(int(v) for v in c_bins))
+    
+    composite = {c: np.full((N_E, N_flux), np.nan) for c in unique_c_bins}
+    print(composite.keys())
+    
+    for i, path in enumerate(sub_folders):
+        full_path = os.path.join(folder, path)
+        sub_paths = os.listdir(full_path)
+        
+        for j, name in enumerate(os.listdir(full_path)):
+            filename = os.path.join(full_path, name)
+            
+            with open(filename, "rb") as f:
+                d = pickle.load(f)
+                c_dat = d['chain_occupation_number'][0]
+                c_bins = np.round(np.abs(c_dat))
+                
+                p_dat = np.abs(d['parity'][0])
+                n_dat = d['excitation_number'][0]
+
+                unique_c_bins = sorted(set(int(v) for v in c_bins))
+                c_dim = len(unique_c_bins)
+                                
+                for c_val in unique_c_bins:
+                    mask = (c_bins == c_val)
+                    if mask.any():
+                        composite[c_val][i, j] = np.sum(p_dat[mask] < 0.9) / mask.sum()
+
+    return composite
+                
