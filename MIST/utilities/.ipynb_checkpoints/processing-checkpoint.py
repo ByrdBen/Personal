@@ -156,7 +156,7 @@ def get_expects(folder, cdim):
                 for c_val in unique_c_bins:
                     mask = (c_bins == c_val)
                     if mask.any():
-                        composite[c_val][i, j] = np.sum(p_dat[mask] < 0.9) / mask.sum()
+                        composite[c_val][i, j] = np.sum(p_dat[mask] < 0.8) / mask.sum()
 
     return composite
                 

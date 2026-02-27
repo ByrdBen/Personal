@@ -75,7 +75,7 @@ def get_expectation_vals(pkg: ObjPackage):
     P_list  = []
     N_list  = []
     Nc_list = []
-    for vec in tqdm(c_evecs.T, ascii=True, desc="checkin\' vecs"):
+    for vec in tqdm(c_evecs, ascii=True, desc="checkin\' vecs"):
         OLP  = vec.conj().T @ P_t @ vec
         OLN  = vec.conj().T @ N_t @ vec
         OLNc = vec.conj().T @ N_c_full @ vec 
