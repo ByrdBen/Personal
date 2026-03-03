@@ -28,9 +28,9 @@ EJ  = 2.040
 EL  = .091
 EC  = 1.083
 g_n = .062
-g_phi = 1j * g_n
+#g_phi = 1j * g_n
 f_r = 6.627
-coupling_type = 'capacitive'
+coupling_type = 'inductive'
 chain_mode = True
 
 EJ_a = np.sqrt(chain_product / chain_ratio)
