@@ -1,4 +1,4 @@
- # transmon_plus_resonator.py
+     # transmon_plus_resonator.py
 import numpy as np
 import scqubits as scq
 import qutip as qt 
@@ -56,9 +56,11 @@ class CoupledFluxonium(object):
         else:
             # Combine circuit elements
             hs = scq.HilbertSpace([fluxonium, resonator])
-            
+
+        self.hs = hs
+
         # Turn on coupling
-        if (self.coupling_type == ("capacitive" or "mixed")): 
+        if self.coupling_type in ("capacitive", "mixed"): 
             hs.add_interaction(
                 expr=f"{self.g_n} * n * (a + adag)",  # g is directly inserted
                 op1=("n", fluxonium.n_operator(), fluxonium),
@@ -66,9 +68,10 @@ class CoupledFluxonium(object):
                 op3=("adag", resonator.creation_operator(), resonator),
                 add_hc=False
             )
-        if (self.coupling_type == ("inductive" or "mixed")):
+        if self.coupling_type in ("inductive", "mixed"):
+            _, _, coupling_ratio = self.phi_components()
             hs.add_interaction(
-                expr=f"{self.g_phi} * phi * (a - adag)",  # g is directly inserted
+                expr=f"{self.g_n * coupling_ratio} * phi * (a - adag)",  # g is directly inserted
                 op1=("phi", fluxonium.phi_operator(), fluxonium),
                 op2=("a", resonator.annihilation_operator(), resonator),
                 op3=("adag", resonator.creation_operator(), resonator),
@@ -76,17 +79,51 @@ class CoupledFluxonium(object):
             )
 
         if self.chain_mode:
-            hs.add_interaction(
-                expr=f"{self.g_chain} * sin_phi * (a + adag)",  # g is directly inserted
-                op1=("sin_phi", fluxonium.sin_phi_operator(beta = -self.flux), fluxonium),
-                op2=("a", chain_mode.annihilation_operator(), chain_mode),
-                op3=("adag", chain_mode.creation_operator(), chain_mode),
+            # Term 3
+            self.hs.add_interaction(
+                expr=f"{self.g_chain[2]} * sin_phi * (a + adag)",  # g is directly inserted
+                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
+                op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
+                op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
+                add_hc=False
+            )
+            # Term 2
+            self.hs.add_interaction(
+                expr=f"{self.g_chain[1]} * cos_phi * (a + adag) ** 2",  # g is directly inserted
+                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -self.flux), self.fluxonium),
+                op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
+                op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
+                add_hc=False
+            )
+            # Term 1
+            self.hs.add_interaction(
+                expr=f"{self.g_chain[0]} * phi**2 * (a + adag)**2",  # g is directly inserted
+                op1=("phi", self.fluxonium.phi_operator(), self.fluxonium),
+                op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
+                op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False
             )
 
+        if self.coupling_type == "inductive_long":
+            phi_long, _, coupling_ratio = self.phi_components()
+            self.hs.add_interaction(
+                expr=f"{self.g_n * coupling_ratio} * phi_long * (a - adag)",
+                op1=("phi_long", phi_long, fluxonium),
+                op2=("a", resonator.annihilation_operator(), resonator),
+                op3=("adag", resonator.creation_operator(), resonator),
+                add_hc=False
+            )
             
-        self.hs = hs
-        
+        if self.coupling_type == "inductive_trans":
+            _, phi_trans, coupling_ratio = self.phi_components()
+            self.hs.add_interaction(
+                expr=f"{self.g_n * coupling_ratio} * phi_trans * (a - adag)",
+                op1=("phi_trans", phi_trans, fluxonium),
+                op2=("a", resonator.annihilation_operator(), resonator),
+                op3=("adag", resonator.creation_operator(), resonator),
+                add_hc=False
+            )
+                    
         H_full = hs.hamiltonian()
         self.H = H_full        
         
@@ -183,7 +220,7 @@ class CoupledFluxonium(object):
         
         
         # Turn on coupling
-        if (self.coupling_type == ("capacitive" or "mixed")): 
+        if self.coupling_type in ("capacitive", "mixed"): 
             self.hs.add_interaction(
                 expr=f"{self.g_n} * n * (a + adag)",  # g is directly inserted
                 op1=("n", self.fluxonium.n_operator(), self.fluxonium),
@@ -191,23 +228,61 @@ class CoupledFluxonium(object):
                 op3=("adag", self.resonator.creation_operator(), self.resonator),
                 add_hc=False
             )
-        if (self.coupling_type == ("inductive" or "mixed")):
+        if self.coupling_type in ("inductive", "mixed"):
+            _, _, coupling_ratio = self.phi_components()
             self.hs.add_interaction(
-                expr=f"{self.g_phi} * phi * (a - adag)",  # g is directly inserted
+                expr=f"{self.g_n * coupling_ratio} * phi * (a - adag)",  # g is directly inserted
                 op1=("phi", self.fluxonium.phi_operator(), self.fluxonium),
                 op2=("a", self.resonator.annihilation_operator(), self.resonator),
                 op3=("adag", self.resonator.creation_operator(), self.resonator),
                 add_hc=False
             )
         if self.chain_mode:
+            # Term 3
             self.hs.add_interaction(
-                expr=f"{self.g_chain} * sin_phi * (a + adag)",  # g is directly inserted
+                expr=f"{self.g_chain[2]} * sin_phi * (a + adag)",  # g is directly inserted
                 op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
                 op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
                 op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False
             )
+            # Term 2
+            self.hs.add_interaction(
+                expr=f"{self.g_chain[1]} * cos_phi * (a + adag) ** 2",  # g is directly inserted
+                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -self.flux), self.fluxonium),
+                op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
+                op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
+                add_hc=False
+            )
+            # Term 1
+            self.hs.add_interaction(
+                expr=f"{self.g_chain[0]} * phi**2 * (a + adag)**2",  # g is directly inserted
+                op1=("phi", self.fluxonium.phi_operator(), self.fluxonium),
+                op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
+                op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
+                add_hc=False
+            )
+
+        if self.coupling_type == "inductive_long":
+            phi_long, _, coupling_ratio = self.phi_components()
+            self.hs.add_interaction(
+                expr=f"{self.g_n * coupling_ratio} * phi_long * (a - adag)",
+                op1=("phi_long", phi_long, self.fluxonium),
+                op2=("a", self.resonator.annihilation_operator(), self.resonator),
+                op3=("adag", self.resonator.creation_operator(), self.resonator),
+                add_hc=False
+            )
             
+        if self.coupling_type == "inductive_trans":
+            _, phi_trans, coupling_ratio = self.phi_components()
+            self.hs.add_interaction(
+                expr=f"{self.g_n * coupling_ratio} * phi_trans * (a - adag)",
+                op1=("phi_trans", phi_trans, self.fluxonium),
+                op2=("a", self.resonator.annihilation_operator(), self.resonator),
+                op3=("adag", self.resonator.creation_operator(), self.resonator),
+                add_hc=False
+            )
+                 
         self.H = self.hs.hamiltonian()
         
         if lookup:
@@ -216,8 +291,42 @@ class CoupledFluxonium(object):
         if print_update:
             print(r'Flux set to ' + f'{flux:.2f} ' + r'$\Phi_0$')
 
+    def phi_components(self):
+        evals, evecs = self.fluxonium.eigensys(evals_count=self.f_trunc)
+        phi_fock     = self.fluxonium.phi_operator()
+        n_fock       = self.fluxonium.n_operator()
+        
+        # Transform phi to truncated eigenbasis
+        phi_eig = evecs.T.conj() @ phi_fock @ evecs
+        # Grab re-normalization constant
+        phi_mat_elem = phi_eig[0 , 1]
+
+        # Transform phi to truncated eigenbasis
+        n_eig = evecs.T.conj() @ n_fock @ evecs
+        # Grab re-normalization constant
+        n_mat_elem = n_eig[0 , 1]
+
+        # Renormalizing our inductive coupling strength
+        coupling_ratio = np.abs(n_mat_elem) / np.abs(phi_mat_elem)
+        
+        # Decompose
+        phi_long_eig  = np.diag(np.diag(phi_eig))            # diagonal only
+        phi_trans_eig = phi_eig - phi_long_eig                # off-diagonal only
+        
+        # Project back to Fock basis for add_interaction
+        phi_long  = evecs @ phi_long_eig  @ evecs.T.conj()
+        phi_trans = evecs @ phi_trans_eig @ evecs.T.conj()
+        
+        return phi_long, phi_trans, coupling_ratio
+
+
 def get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, N):
     # See notes
-    term1 = 2 * EC_a / EJ_a 
-    term2 = 1 / (1 + (cg_a / c_a)*(num_JJ**2/(2**2 * np.pi**2)))
-    return EJ * (term1 * term2) ** (1/4) * N ** (1/2)
+    term1    = 2 * EC_a / EJ_a 
+    term2    = 1 / (1 + (cg_a / c_a)*(num_JJ**2/(2**2 * np.pi**2)))
+    zpf      = (term1 * term2) ** (1/4)
+    g_chain2 = EJ * zpf * (N ** (1/2))
+    g_chain1 = EJ / 2 * (zpf ** 2) * N
+    g_chain0 = - EJ_a / (4 * num_JJ) * (zpf ** 2)
+    
+    return (g_chain0, g_chain1, g_chain2)
