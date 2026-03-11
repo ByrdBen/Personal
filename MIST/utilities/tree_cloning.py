@@ -33,12 +33,12 @@ chain_mode = True
 EJ_a = 60
 EC_a = .74
 cg_a = .0998
-# c_a  = 
+c_a  = 0
 num_JJ = 122
 N = 0.0574
 theta2 = .319
-#g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, 0.0574)
-g_chain = EJ * theta2 * N ** (1/2)
+g_chain = get_g_chain(EJ, EJ_a, num_JJ, N = 0.0574, zpf = theta2)
+#g_chain = EJ * theta2 * N ** (1/2)
 f_c = 12.17
 
 fit_params = {}

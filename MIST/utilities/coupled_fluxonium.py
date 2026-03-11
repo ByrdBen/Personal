@@ -320,13 +320,18 @@ class CoupledFluxonium(object):
         return phi_long, phi_trans, coupling_ratio
 
 
-def get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, N):
+def get_g_chain(EJ, EJ_a, num_JJ, N, zpf=None, cg_a=None, c_=None, EC_a=None):
     # See notes
-    term1    = 2 * EC_a / EJ_a 
-    term2    = 1 / (1 + (cg_a / c_a)*(num_JJ**2/(2**2 * np.pi**2)))
-    zpf      = (term1 * term2) ** (1/4)
-    g_chain2 = EJ * zpf * (N ** (1/2))
-    g_chain1 = EJ / 2 * (zpf ** 2) * N
-    g_chain0 = - EJ_a / (4 * num_JJ) * (zpf ** 2)
+    if zpf:
+        g_chain2 = EJ * zpf * (N ** (1/2))
+        g_chain1 = EJ / 2 * (zpf ** 2) * N
+        g_chain0 = - EJ_a / (4 * num_JJ) * (zpf ** 2)
+    else:
+        term1    = 2 * EC_a / EJ_a 
+        term2    = 1 / (1 + (cg_a / c_a)*(num_JJ**2/(2**2 * np.pi**2)))
+        zpf      = (term1 * term2) ** (1/4)
+        g_chain2 = EJ * zpf * (N ** (1/2))
+        g_chain1 = EJ / 2 * (zpf ** 2) * N
+        g_chain0 = - EJ_a / (4 * num_JJ) * (zpf ** 2)
     
     return (g_chain0, g_chain1, g_chain2)
