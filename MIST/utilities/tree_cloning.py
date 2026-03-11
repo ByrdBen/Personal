@@ -21,25 +21,25 @@ ncut       = f_trunc
 osc_trunc  = int(sys.argv[2])
 flux       = .5
 lookup     = False
-EJ  = 7.3
-EL  = .49
-EC  = 1.73
-g_n = .062
+EJ  = 7.276
+EL  = .4543
+EC  = .9412
+g_n = .0255
 g_phi = 1j * g_n
-f_r = 6.627
+f_r = 8.5
 coupling_type = 'capacitive'
 chain_mode = True
 
 EJ_a = 60
 EC_a = .74
-cg_a = 1e-6
-c_a  = 1e-6
+cg_a = .0998
+# c_a  = 
 num_JJ = 122
 N = 0.0574
 theta2 = .319
 #g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, 0.0574)
 g_chain = EJ * theta2 * N ** (1/2)
-f_c = np.sqrt(8 * EJ_a * EC_a)
+f_c = 12.17
 
 fit_params = {}
 # This may be excessive but it feels more flexible
