@@ -447,7 +447,7 @@ def branch_analysis(pkg: ObjPackage, update_flux, ncrit_mode=False):
               "cdim": (cdim, None, None)}
     
     data = {
-        "PCA_list"   : (PCA_list, None, None)
+        "PCA_list"   : (PCA_list, None, None),
         "eigenvalues": (dressed_evals, 'GHz', None),
         "map_list"   : (map_list, None, None),
         "avg_n_r"    : (n_list1, None, None),
