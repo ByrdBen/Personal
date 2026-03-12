@@ -447,10 +447,11 @@ def branch_analysis(pkg: ObjPackage, update_flux, ncrit_mode=False):
               "cdim": (cdim, None, None)}
     
     data = {
-        "PCA_list": (PCA_list, None, None),
-        "map_list": (map_list, None, None),
-        "avg_n_r":  (n_list1, None, None),
-        "avg_n_q":  (n_list2, None, ["avg_n_r"])}
+        "PCA_list"   : (PCA_list, None, None)
+        "eigenvalues": (dressed_evals, 'GHz', None),
+        "map_list"   : (map_list, None, None),
+        "avg_n_r"    : (n_list1, None, None),
+        "avg_n_q"    : (n_list2, None, ["avg_n_r"])}
     if cdim:
         data["avg_n_c"] = (n_list3, None, ["avg_n_r"])
 
