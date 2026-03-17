@@ -79,26 +79,18 @@ class CoupledFluxonium(object):
             )
 
         if self.chain_mode:
-            # Term 3
-            self.hs.add_interaction(
-                expr=f"{self.g_chain[2]} * sin_phi * (a + adag)",  # g is directly inserted
-                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
-                op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
-                op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
-                add_hc=False
-            )
             # Term 2
             self.hs.add_interaction(
-                expr=f"{self.g_chain[1]} * cos_phi * (a + adag) ** 2",  # g is directly inserted
-                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -self.flux), self.fluxonium),
+                expr=f"{self.g_chain[1]} * sin_phi * (a + adag)",  # g is directly inserted
+                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
                 op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
                 op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False
             )
             # Term 1
             self.hs.add_interaction(
-                expr=f"{self.g_chain[0]} * phi**2 * (a + adag)**2",  # g is directly inserted
-                op1=("phi", self.fluxonium.phi_operator(), self.fluxonium),
+                expr=f"{self.g_chain[0]} * cos_phi * (a + adag) ** 2",  # g is directly inserted
+                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -self.flux), self.fluxonium),
                 op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
                 op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False
@@ -238,26 +230,18 @@ class CoupledFluxonium(object):
                 add_hc=False
             )
         if self.chain_mode:
-            # Term 3
-            self.hs.add_interaction(
-                expr=f"{self.g_chain[2]} * sin_phi * (a + adag)",  # g is directly inserted
-                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
-                op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
-                op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
-                add_hc=False
-            )
             # Term 2
             self.hs.add_interaction(
-                expr=f"{self.g_chain[1]} * cos_phi * (a + adag) ** 2",  # g is directly inserted
-                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -self.flux), self.fluxonium),
+                expr=f"{self.g_chain[1]} * sin_phi * (a + adag)",  # g is directly inserted
+                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
                 op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
                 op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False
             )
             # Term 1
             self.hs.add_interaction(
-                expr=f"{self.g_chain[0]} * phi**2 * (a + adag)**2",  # g is directly inserted
-                op1=("phi", self.fluxonium.phi_operator(), self.fluxonium),
+                expr=f"{self.g_chain[0]} * cos_phi * (a + adag) ** 2",  # g is directly inserted
+                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -self.flux), self.fluxonium),
                 op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
                 op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False
@@ -325,13 +309,11 @@ def get_g_chain(EJ, EJ_a, num_JJ, N, zpf=None, cg_a=None, c_=None, EC_a=None):
     if zpf:
         g_chain2 = EJ * zpf * (N ** (1/2))
         g_chain1 = EJ / 2 * (zpf ** 2) * N
-        g_chain0 = - EJ_a / (4 * num_JJ) * (zpf ** 2)
     else:
         term1    = 2 * EC_a / EJ_a 
         term2    = 1 / (1 + (cg_a / c_a)*(num_JJ**2/(2**2 * np.pi**2)))
         zpf      = (term1 * term2) ** (1/4)
         g_chain2 = EJ * zpf * (N ** (1/2))
         g_chain1 = EJ / 2 * (zpf ** 2) * N
-        g_chain0 = - EJ_a / (4 * num_JJ) * (zpf ** 2)
     
-    return (g_chain0, g_chain1, g_chain2)
+    return (g_chain1, g_chain2)
