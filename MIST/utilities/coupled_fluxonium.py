@@ -291,7 +291,7 @@ class CoupledFluxonium(object):
         n_mat_elem = n_eig[0 , 1]
 
         # Renormalizing our inductive coupling strength
-        coupling_ratio = np.abs(n_mat_elem) / np.abs(phi_mat_elem)
+        coupling_ratio = 1j * (np.abs(n_mat_elem) / np.abs(phi_mat_elem))
         
         # Decompose
         phi_long_eig  = np.diag(np.diag(phi_eig))            # diagonal only
@@ -304,7 +304,7 @@ class CoupledFluxonium(object):
         return phi_long, phi_trans, coupling_ratio
 
 
-def get_g_chain(EJ, EJ_a, num_JJ, N, zpf=None, cg_a=None, c_=None, EC_a=None):
+def get_g_chain(EJ, EJ_a, num_JJ, N, zpf=None, cg_a=None, c_a=None, EC_a=None):
     # See notes
     if zpf:
         g_chain2 = EJ * zpf * (N ** (1/2))

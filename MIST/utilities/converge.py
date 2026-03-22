@@ -35,12 +35,16 @@ chain_mode = True
 
 EJ_a = np.sqrt(chain_product / chain_ratio)
 EC_a = np.sqrt(chain_product * chain_ratio)
-cg_a = 1e-6
-c_a  = 1e-6
+#cg_a = 1e-6
+#c_a  = 1e-6
+N   = .6
+zpf = .3
 num_JJ = 204
-g_chain = get_g_chain(EJ, EC_a, EJ_a, cg_a, c_a, num_JJ, chain_trunc)
-print(g_chain)
-g_chain = g_chain
+g_chain = get_g_chain(EJ, EJ_a, 
+                      num_JJ, 
+                      N = N,
+                      zpf = zpf)
+
 f_c = np.sqrt(8 * EJ_a * EC_a)
 
 fit_params = {}
