@@ -2,9 +2,9 @@ executable      = conda_wrapper.sh
 
 arguments       = utilities/tree_cloning.py 25 40
 
-output          = outputs/$(flux)_full.out
-error           = errors/$(flux)_full.err
-log             = logs/$(flux)_full.log
+output          = outputs/$(flux)_full_cl.out
+error           = errors/$(flux)_full_cl.err
+log             = logs/$(flux)_full_cl.log
 
 # Start at 50GB, escalate on OOM
 request_memory = ifThenElse(isUndefined(NumJobStarts) || NumJobStarts == 0, 51200, ifThenElse(NumJobStarts == 1, 81920, 102400))
