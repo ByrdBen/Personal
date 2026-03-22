@@ -7,7 +7,7 @@ from coupled_fluxonium import *
 import os
 import pickle
     
-save_folder = f"/home/babyrd/branches/Personal/results/test/verification/" 
+save_folder = f"/home/babyrd/branches/Personal/results/verification/" 
 print("Save folder exists:", os.path.exists(save_folder), flush=True)
 print("Python argv:", sys.argv)
 print("Current dir:", os.getcwd())
