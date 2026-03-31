@@ -414,7 +414,7 @@ def branch_analysis(pkg: ObjPackage, update_flux, ncrit_mode=False):
         vecs = c_evecs[np.asarray(map_list[-1])]
         PCA_temp = ladder_levels(vecs, c_evecs, b_adag, new_vecs=True)
         PCA_list.append(PCA_temp.T)
-        fixed_map_temp, assigned = get_map(PCA_temp.T, used_idx=used_idx)
+        fixed_map_temp, assigned = get_map(PCA_temp.T, used_indices=used_idx)
         used_idx = used_idx | assigned
         map_list.append(fixed_map_temp)
         
