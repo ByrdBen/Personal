@@ -82,7 +82,7 @@ class CoupledFluxonium(object):
             # Term 2
             self.hs.add_interaction(
                 expr=f"{self.g_chain[1]} * sin_phi * (a + adag)",  # g is directly inserted
-                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
+                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -2*np.pi*self.flux), self.fluxonium),
                 op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
                 op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False
@@ -90,7 +90,7 @@ class CoupledFluxonium(object):
             # Term 1
             self.hs.add_interaction(
                 expr=f"{self.g_chain[0]} * cos_phi * (a + adag) ** 2",  # g is directly inserted
-                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -self.flux), self.fluxonium),
+                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -2*np.pi*self.flux), self.fluxonium),
                 op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
                 op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False
@@ -233,7 +233,7 @@ class CoupledFluxonium(object):
             # Term 2
             self.hs.add_interaction(
                 expr=f"{self.g_chain[1]} * sin_phi * (a + adag)",  # g is directly inserted
-                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -self.flux), self.fluxonium),
+                op1=("sin_phi", self.fluxonium.sin_phi_operator(beta = -2*np.pi*self.flux), self.fluxonium),
                 op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
                 op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False
@@ -241,7 +241,7 @@ class CoupledFluxonium(object):
             # Term 1
             self.hs.add_interaction(
                 expr=f"{self.g_chain[0]} * cos_phi * (a + adag) ** 2",  # g is directly inserted
-                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -self.flux), self.fluxonium),
+                op1=("cos_phi", self.fluxonium.cos_phi_operator(beta = -2*np.pi*self.flux), self.fluxonium),
                 op2=("a", self.chain_mode.annihilation_operator(), self.chain_mode),
                 op3=("adag", self.chain_mode.creation_operator(), self.chain_mode),
                 add_hc=False

@@ -13,8 +13,8 @@ print("Python argv:", sys.argv)
 print("Current dir:", os.getcwd())
 print("Save folder:", save_folder)
 
-chain_ratio   = float(sys.argv[4])
-chain_product = float(sys.argv[5])
+chain_product   = float(sys.argv[4])
+chain_ratio = float(sys.argv[5])
 
 chain_trunc = 6
 
