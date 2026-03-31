@@ -3,8 +3,8 @@ from tqdm import tqdm
 import numpy as np
 from scipy.linalg import eigh  
 from scipy.sparse.linalg import eigsh  
-from utilities.coupled_transmon import CoupledTransmon
-from utilities.coupled_fluxonium import CoupledFluxonium
+from coupled_transmon import CoupledTransmon
+from coupled_fluxonium import CoupledFluxonium
 import qutip as qt
 import matplotlib.pyplot as plt
 import scqubits as scq
